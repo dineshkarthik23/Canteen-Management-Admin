@@ -17,61 +17,37 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   int? _filteredCategoryId;
 
   Future<void> _openCategoryDialog({CategoryModel? category}) async {
-    final formKey = GlobalKey<FormState>();
-    final controller = TextEditingController(text: category?.name ?? '');
     final isEdit = category != null;
-
-    final shouldSubmit = await showDialog<bool>(
+    final categoryName = await showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(isEdit ? 'Edit Category' : 'Add Category'),
-        content: Form(
-          key: formKey,
-          child: TextFormField(
-            controller: controller,
-            autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Category Name',
-              hintText: 'Example: Breakfast Combos',
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Category name is required';
-              }
-              if (widget.appState.categoryNameExists(
-                value,
-                excludingId: category?.id,
-              )) {
-                return 'Category already exists';
-              }
-              return null;
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                Navigator.of(context).pop(true);
-              }
-            },
-            child: Text(isEdit ? 'Save' : 'Add'),
-          ),
-        ],
+      builder: (context) => _CategoryInputDialog(
+        title: isEdit ? 'Edit Category' : 'Add Category',
+        actionLabel: isEdit ? 'Save' : 'Add',
+        initialName: category?.name ?? '',
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Category name is required';
+          }
+          if (widget.appState.categoryNameExists(
+            value,
+            excludingId: category?.id,
+          )) {
+            return 'Category already exists';
+          }
+          return null;
+        },
       ),
     );
 
-    if (shouldSubmit != true) {
-      controller.dispose();
+    if (categoryName == null) {
+      return;
+    }
+    if (!mounted) {
       return;
     }
 
-    final categoryName = controller.text.trim();
-    controller.dispose();
+    // Let dialog route teardown complete before mutating app state.
+    await Future<void>.delayed(kThemeAnimationDuration);
 
     final success = isEdit
         ? widget.appState.updateCategory(category.id, categoryName)
@@ -116,6 +92,11 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     );
 
     if (shouldDelete == true) {
+      // Let dialog route teardown complete before mutating app state.
+      await Future<void>.delayed(kThemeAnimationDuration);
+      if (!mounted) {
+        return;
+      }
       widget.appState.deleteCategory(category.id);
       if (_filteredCategoryId == category.id) {
         setState(() {
@@ -284,6 +265,74 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+class _CategoryInputDialog extends StatefulWidget {
+  const _CategoryInputDialog({
+    required this.title,
+    required this.actionLabel,
+    required this.initialName,
+    required this.validator,
+  });
+
+  final String title;
+  final String actionLabel;
+  final String initialName;
+  final String? Function(String?) validator;
+
+  @override
+  State<_CategoryInputDialog> createState() => _CategoryInputDialogState();
+}
+
+class _CategoryInputDialogState extends State<_CategoryInputDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialName);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    Navigator.of(context).pop(_controller.text.trim());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.title),
+      content: Form(
+        key: _formKey,
+        child: TextFormField(
+          controller: _controller,
+          autofocus: true,
+          decoration: const InputDecoration(
+            labelText: 'Category Name',
+            hintText: 'Example: Breakfast Combos',
+          ),
+          validator: widget.validator,
+          onFieldSubmitted: (_) => _submit(),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(onPressed: _submit, child: Text(widget.actionLabel)),
+      ],
     );
   }
 }

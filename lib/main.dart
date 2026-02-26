@@ -69,7 +69,6 @@ class _CanteenAdminAppState extends State<CanteenAdminApp> {
   }
 
   void _onLogout() {
-    // Close transient routes (dialogs/bottom sheets) before swapping the root.
     _navigatorKey.currentState?.popUntil((route) => route.isFirst);
     _cacheService.setLoggedIn(false);
     _safeSetState(() {
