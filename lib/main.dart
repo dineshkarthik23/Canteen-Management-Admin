@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-
 import 'package:clg_admin/screens/admin_shell.dart';
 import 'package:clg_admin/screens/login_screen.dart';
 import 'package:clg_admin/screens/splash_screen.dart';
@@ -92,7 +90,7 @@ class _CanteenAdminAppState extends State<CanteenAdminApp> {
     final darkTheme = ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: bluePrimary,
+        seedColor: const Color.fromARGB(255, 20, 94, 212),
         brightness: Brightness.dark,
       ),
       appBarTheme: const AppBarTheme(centerTitle: true),
@@ -106,7 +104,7 @@ class _CanteenAdminAppState extends State<CanteenAdminApp> {
     );
 
     return MaterialApp(
-      title: 'Canteen Admin',
+      title: 'Canteen Admin Dashboard',
       debugShowCheckedModeBanner: false,
       themeMode: _themeMode,
       theme: lightTheme,
