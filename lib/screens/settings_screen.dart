@@ -110,7 +110,7 @@ class SettingsScreen extends StatelessWidget {
                       leading: const Icon(Icons.analytics_outlined),
                       title: const Text('Current Analytics'),
                       subtitle: Text(
-                        'Items: ${appState.totalItems} | Categories: ${appState.totalCategories} | Revenue est: ₹${appState.totalRevenueEstimate.toStringAsFixed(2)}',
+                        'Items: ${appState.totalItems} | Categories: ${appState.totalCategories} | Revenue est: Rs. ${appState.totalRevenueEstimate.toStringAsFixed(2)}',
                       ),
                     ),
                     const Divider(height: 0),
@@ -160,9 +160,12 @@ class SettingsScreen extends StatelessWidget {
                           'Logout',
                           'Are you sure you want to logout?',
                         );
-                        if (confirmed) {
-                          onLogout();
+                        if (!confirmed || !context.mounted) {
+                          return;
                         }
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          onLogout();
+                        });
                       },
                     ),
                   ],

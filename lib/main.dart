@@ -1,10 +1,10 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:clg_admin/screens/admin_shell.dart';
 import 'package:clg_admin/screens/login_screen.dart';
 import 'package:clg_admin/screens/splash_screen.dart';
 import 'package:clg_admin/services/app_state.dart';
 import 'package:clg_admin/services/auth_service.dart';
+import 'package:clg_admin/services/cache_service.dart';
 
 void main() {
   runApp(const CanteenAdminApp());
@@ -18,49 +18,82 @@ class CanteenAdminApp extends StatefulWidget {
 }
 
 class _CanteenAdminAppState extends State<CanteenAdminApp> {
-  final AppState _appState = AppState();
   final AuthService _authService = AuthService();
+  final CacheService _cacheService = CacheService();
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+  late final AppState _appState;
 
   bool _showSplash = true;
   bool _isLoggedIn = false;
   ThemeMode _themeMode = ThemeMode.light;
-  Timer? _splashTimer;
 
   @override
   void initState() {
     super.initState();
-    _splashTimer = Timer(const Duration(seconds: 2), () {
-      if (!mounted) {
-        return;
+    _appState = AppState();
+    _appState.setPersistStateCallback(_cacheService.saveAppState);
+    _bootstrapFromCache();
+  }
+
+  Future<void> _bootstrapFromCache() async {
+    final started = DateTime.now();
+    final cachedState = await _cacheService.loadAppState();
+    if (cachedState != null) {
+      final restored = _appState.hydrateFromJsonMap(cachedState);
+      if (!restored) {
+        _appState.resetData(notify: false);
       }
-      setState(() {
-        _showSplash = false;
-      });
+    }
+
+    final cachedTheme = await _cacheService.getThemeMode();
+    final cachedLogin = await _cacheService.isLoggedIn();
+
+    final elapsed = DateTime.now().difference(started);
+    const splashDuration = Duration(seconds: 2);
+    if (elapsed < splashDuration) {
+      await Future<void>.delayed(splashDuration - elapsed);
+    }
+
+    _safeSetState(() {
+      _themeMode = cachedTheme;
+      _isLoggedIn = cachedLogin;
+      _showSplash = false;
     });
   }
 
-  @override
-  void dispose() {
-    _splashTimer?.cancel();
-    super.dispose();
-  }
-
   void _onLoginSuccess() {
-    setState(() {
+    _cacheService.setLoggedIn(true);
+    _safeSetState(() {
       _isLoggedIn = true;
     });
   }
 
   void _onLogout() {
-    setState(() {
+    // Close transient routes (dialogs/bottom sheets) before swapping the root.
+    _navigatorKey.currentState?.popUntil((route) => route.isFirst);
+    _cacheService.setLoggedIn(false);
+    _safeSetState(() {
       _isLoggedIn = false;
       _showSplash = false;
     });
   }
 
   void _onThemeToggle(bool enabled) {
-    setState(() {
+    _cacheService.setThemeMode(enabled ? ThemeMode.dark : ThemeMode.light);
+    _safeSetState(() {
       _themeMode = enabled ? ThemeMode.dark : ThemeMode.light;
+    });
+  }
+
+  void _safeSetState(VoidCallback fn) {
+    if (!mounted) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      setState(fn);
     });
   }
 
@@ -104,6 +137,7 @@ class _CanteenAdminAppState extends State<CanteenAdminApp> {
     );
 
     return MaterialApp(
+      navigatorKey: _navigatorKey,
       title: 'Canteen Admin Dashboard',
       debugShowCheckedModeBanner: false,
       themeMode: _themeMode,

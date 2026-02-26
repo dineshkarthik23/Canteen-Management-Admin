@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
@@ -8,12 +9,105 @@ import 'package:clg_admin/models/food_item.dart';
 class AppState extends ChangeNotifier {
   final List<CategoryModel> _categories = <CategoryModel>[];
   final List<FoodItem> _items = <FoodItem>[];
+  Future<void> Function(Map<String, dynamic>)? _persistStateCallback;
 
   int _nextCategoryId = 1;
   int _nextItemId = 1;
 
   AppState() {
     resetData(notify: false);
+  }
+
+  void setPersistStateCallback(
+    Future<void> Function(Map<String, dynamic>) callback,
+  ) {
+    _persistStateCallback = callback;
+  }
+
+  Map<String, dynamic> toJsonMap() {
+    return <String, dynamic>{
+      'nextCategoryId': _nextCategoryId,
+      'nextItemId': _nextItemId,
+      'categories': _categories
+          .map(
+            (category) => <String, dynamic>{
+              'id': category.id,
+              'name': category.name,
+              'createdAt': category.createdAt.toIso8601String(),
+            },
+          )
+          .toList(),
+      'items': _items
+          .map(
+            (item) => <String, dynamic>{
+              'id': item.id,
+              'name': item.name,
+              'categoryId': item.categoryId,
+              'price': item.price,
+              'description': item.description,
+              'isAvailable': item.isAvailable,
+              'imageUrl': item.imageUrl,
+              'createdAt': item.createdAt.toIso8601String(),
+              'updatedAt': item.updatedAt.toIso8601String(),
+            },
+          )
+          .toList(),
+    };
+  }
+
+  bool hydrateFromJsonMap(Map<String, dynamic> json) {
+    try {
+      final rawCategories = json['categories'];
+      final rawItems = json['items'];
+      if (rawCategories is! List || rawItems is! List) {
+        return false;
+      }
+
+      final parsedCategories = rawCategories
+          .map((entry) => Map<String, dynamic>.from(entry as Map))
+          .map(
+            (entry) => CategoryModel(
+              id: entry['id'] as int,
+              name: entry['name'] as String,
+              createdAt: DateTime.parse(entry['createdAt'] as String),
+            ),
+          )
+          .toList();
+
+      final parsedItems = rawItems
+          .map((entry) => Map<String, dynamic>.from(entry as Map))
+          .map(
+            (entry) => FoodItem(
+              id: entry['id'] as int,
+              name: entry['name'] as String,
+              categoryId: entry['categoryId'] as int,
+              price: (entry['price'] as num).toDouble(),
+              description: entry['description'] as String,
+              isAvailable: entry['isAvailable'] as bool,
+              imageUrl: entry['imageUrl'] as String?,
+              createdAt: DateTime.parse(entry['createdAt'] as String),
+              updatedAt: DateTime.parse(entry['updatedAt'] as String),
+            ),
+          )
+          .toList();
+
+      _categories
+        ..clear()
+        ..addAll(parsedCategories);
+      _items
+        ..clear()
+        ..addAll(parsedItems);
+
+      _nextCategoryId =
+          json['nextCategoryId'] as int? ??
+          (_categories.map((category) => category.id).fold<int>(0, _max) + 1);
+      _nextItemId =
+          json['nextItemId'] as int? ??
+          (_items.map((item) => item.id).fold<int>(0, _max) + 1);
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   List<CategoryModel> get categories {
@@ -113,6 +207,7 @@ class AppState extends ChangeNotifier {
       ),
     );
     notifyListeners();
+    _persistState();
     return true;
   }
 
@@ -127,6 +222,7 @@ class AppState extends ChangeNotifier {
     }
     _categories[index] = _categories[index].copyWith(name: clean);
     notifyListeners();
+    _persistState();
     return true;
   }
 
@@ -151,6 +247,7 @@ class AppState extends ChangeNotifier {
     );
     _categories.removeWhere((category) => category.id == id);
     notifyListeners();
+    _persistState();
   }
 
   List<FoodItem> itemsForCategory(int? categoryId) {
@@ -183,6 +280,7 @@ class AppState extends ChangeNotifier {
       ),
     );
     notifyListeners();
+    _persistState();
   }
 
   void updateItem(FoodItem item) {
@@ -192,11 +290,13 @@ class AppState extends ChangeNotifier {
     }
     _items[index] = item.copyWith(updatedAt: DateTime.now());
     notifyListeners();
+    _persistState();
   }
 
   void deleteItem(int id) {
     _items.removeWhere((item) => item.id == id);
     notifyListeners();
+    _persistState();
   }
 
   void resetData({bool notify = true}) {
@@ -215,6 +315,7 @@ class AppState extends ChangeNotifier {
     if (notify) {
       notifyListeners();
     }
+    _persistState();
   }
 
   CategoryModel _ensureUncategorized({int? excludingId}) {
@@ -236,6 +337,14 @@ class AppState extends ChangeNotifier {
   }
 
   static int _max(int a, int b) => a > b ? a : b;
+
+  void _persistState() {
+    final callback = _persistStateCallback;
+    if (callback == null) {
+      return;
+    }
+    unawaited(callback(toJsonMap()));
+  }
 
   List<CategoryModel> _defaultCategories() {
     final now = DateTime.now();
