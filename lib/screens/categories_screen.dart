@@ -158,11 +158,20 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                           Text(
                             'Manage Categories',
                             style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.w700),
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                           ),
                           Text(
-                            '${categories.length} category${categories.length == 1 ? '' : 'ies'}',
-                            style: Theme.of(context).textTheme.bodySmall,
+                            '${categories.length} categor${categories.length == 1 ? 'y' : 'ies'}',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.primary.withValues(alpha: 0.85),
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
                         ],
                       ),
