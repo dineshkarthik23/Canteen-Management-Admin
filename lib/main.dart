@@ -110,7 +110,7 @@ class _CanteenAdminAppState extends State<CanteenAdminApp> {
       ),
       scaffoldBackgroundColor: const Color(0xFFF4F8FF),
       appBarTheme: const AppBarTheme(
-        centerTitle: false,
+        centerTitle: true,
         backgroundColor: bluePrimary,
         foregroundColor: Colors.white,
         elevation: 0,

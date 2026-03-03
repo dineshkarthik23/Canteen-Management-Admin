@@ -69,7 +69,7 @@ class _AdminShellState extends State<AdminShell> {
           NavigationDestination(
             icon: Icon(Icons.fastfood_outlined),
             selectedIcon: Icon(Icons.fastfood),
-            label: 'Manage Items',
+            label: 'Items',
           ),
           NavigationDestination(
             icon: Icon(Icons.category_outlined),

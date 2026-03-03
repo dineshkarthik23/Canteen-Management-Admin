@@ -37,6 +37,7 @@ class SplashScreen extends StatelessWidget {
           SafeArea(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                   padding: const EdgeInsets.all(18),
@@ -56,6 +57,7 @@ class SplashScreen extends StatelessWidget {
                 const SizedBox(height: 22),
                 const Text(
                   'College Canteen',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.w700,
@@ -65,6 +67,7 @@ class SplashScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   'Admin Management App',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white.withValues(alpha: 0.9),
