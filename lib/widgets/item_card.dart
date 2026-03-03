@@ -23,9 +23,10 @@ class ItemCard extends StatelessWidget {
         : Theme.of(context).colorScheme.error;
 
     return Card(
+      clipBehavior: Clip.antiAlias,
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         child: Column(
           children: [
             Row(
@@ -42,18 +43,32 @@ class ItemCard extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.w700),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       Text(
                         categoryName,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        '₹${item.price.toStringAsFixed(2)}',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          'Rs. ${item.price.toStringAsFixed(2)}',
+                          style: Theme.of(context).textTheme.labelLarge
+                              ?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                         ),
                       ),
                     ],
@@ -61,21 +76,21 @@ class ItemCard extends StatelessWidget {
                 ),
                 Column(
                   children: [
-                    IconButton(
+                    _ActionIconButton(
                       tooltip: 'Edit item',
                       onPressed: onEdit,
-                      icon: const Icon(Icons.edit_outlined),
+                      icon: Icons.edit_outlined,
                     ),
-                    IconButton(
+                    _ActionIconButton(
                       tooltip: 'Delete item',
                       onPressed: onDelete,
-                      icon: const Icon(Icons.delete_outline),
+                      icon: Icons.delete_outline,
                     ),
                   ],
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             if (item.description.trim().isNotEmpty)
               Align(
                 alignment: Alignment.centerLeft,
@@ -84,7 +99,7 @@ class ItemCard extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Align(
               alignment: Alignment.centerLeft,
               child: Chip(
@@ -141,6 +156,33 @@ class _ItemImage extends StatelessWidget {
       child: Icon(
         Icons.fastfood_outlined,
         color: Theme.of(context).colorScheme.primary,
+      ),
+    );
+  }
+}
+
+class _ActionIconButton extends StatelessWidget {
+  const _ActionIconButton({
+    required this.tooltip,
+    required this.onPressed,
+    required this.icon,
+  });
+
+  final String tooltip;
+  final VoidCallback onPressed;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton.filledTonal(
+      tooltip: tooltip,
+      onPressed: onPressed,
+      icon: Icon(icon, size: 18),
+      visualDensity: VisualDensity.compact,
+      style: IconButton.styleFrom(
+        backgroundColor: Theme.of(
+          context,
+        ).colorScheme.primary.withValues(alpha: 0.12),
       ),
     );
   }

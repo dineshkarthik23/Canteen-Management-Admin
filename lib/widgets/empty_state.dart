@@ -19,19 +19,29 @@ class EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 360),
         padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: 0.14),
+          ),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             CircleAvatar(
-              radius: 28,
+              radius: 30,
               backgroundColor: Theme.of(
                 context,
-              ).colorScheme.primaryContainer.withValues(alpha: 0.6),
+              ).colorScheme.primary.withValues(alpha: 0.12),
               child: Icon(
                 icon,
-                size: 28,
+                size: 30,
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),

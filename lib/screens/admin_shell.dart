@@ -42,8 +42,18 @@ class _AdminShellState extends State<AdminShell> {
     ];
 
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: pages),
+      body: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFF4F8FF), Color(0xFFEAF2FF)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: IndexedStack(index: _currentIndex, children: pages),
+      ),
       bottomNavigationBar: NavigationBar(
+        height: 74,
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {
           setState(() {

@@ -117,87 +117,140 @@ class _ManageItemsScreenState extends State<ManageItemsScreen> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                TextField(
-                  controller: _searchController,
-                  onChanged: (_) => setState(() {}),
-                  decoration: InputDecoration(
-                    hintText: 'Search by item name or description',
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: _searchController.text.isEmpty
-                        ? null
-                        : IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _searchController.clear();
-                              });
-                            },
-                            icon: const Icon(Icons.close),
-                          ),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.15),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.12),
+                        child: Icon(
+                          Icons.fastfood,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Menu Items',
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.w700),
+                            ),
+                            Text(
+                              '${filteredItems.length} result${filteredItems.length == 1 ? '' : 's'}',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: DropdownButtonFormField<int?>(
-                        isExpanded: true,
-                        key: ValueKey<int?>(_selectedCategoryId),
-                        initialValue: _selectedCategoryId,
-                        decoration: const InputDecoration(
-                          labelText: 'Category',
-                          prefixIcon: Icon(Icons.category_outlined),
-                        ),
-                        items: [
-                          const DropdownMenuItem<int?>(
-                            value: null,
-                            child: Text('All Categories'),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      children: [
+                        TextField(
+                          controller: _searchController,
+                          onChanged: (_) => setState(() {}),
+                          decoration: InputDecoration(
+                            hintText: 'Search by item name or description',
+                            prefixIcon: const Icon(Icons.search),
+                            suffixIcon: _searchController.text.isEmpty
+                                ? null
+                                : IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _searchController.clear();
+                                      });
+                                    },
+                                    icon: const Icon(Icons.close),
+                                  ),
                           ),
-                          ...categories.map(
-                            (category) => DropdownMenuItem<int?>(
-                              value: category.id,
-                              child: Text(category.name),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField<int?>(
+                                isExpanded: true,
+                                key: ValueKey<int?>(_selectedCategoryId),
+                                initialValue: _selectedCategoryId,
+                                decoration: const InputDecoration(
+                                  labelText: 'Category',
+                                  prefixIcon: Icon(Icons.category_outlined),
+                                ),
+                                items: [
+                                  const DropdownMenuItem<int?>(
+                                    value: null,
+                                    child: Text('All Categories'),
+                                  ),
+                                  ...categories.map(
+                                    (category) => DropdownMenuItem<int?>(
+                                      value: category.id,
+                                      child: Text(category.name),
+                                    ),
+                                  ),
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedCategoryId = value;
+                                  });
+                                },
+                              ),
                             ),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedCategoryId = value;
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: DropdownButtonFormField<bool?>(
-                        isExpanded: true,
-                        key: ValueKey<bool?>(_availabilityFilter),
-                        initialValue: _availabilityFilter,
-                        decoration: const InputDecoration(
-                          labelText: 'Availability',
-                          prefixIcon: Icon(Icons.inventory_2_outlined),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: DropdownButtonFormField<bool?>(
+                                isExpanded: true,
+                                key: ValueKey<bool?>(_availabilityFilter),
+                                initialValue: _availabilityFilter,
+                                decoration: const InputDecoration(
+                                  labelText: 'Availability',
+                                  prefixIcon: Icon(Icons.inventory_2_outlined),
+                                ),
+                                items: const [
+                                  DropdownMenuItem<bool?>(
+                                    value: null,
+                                    child: Text('All'),
+                                  ),
+                                  DropdownMenuItem<bool?>(
+                                    value: true,
+                                    child: Text('Available'),
+                                  ),
+                                  DropdownMenuItem<bool?>(
+                                    value: false,
+                                    child: Text('Out of Stock'),
+                                  ),
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    _availabilityFilter = value;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                        items: const [
-                          DropdownMenuItem<bool?>(
-                            value: null,
-                            child: Text('All'),
-                          ),
-                          DropdownMenuItem<bool?>(
-                            value: true,
-                            child: Text('Available'),
-                          ),
-                          DropdownMenuItem<bool?>(
-                            value: false,
-                            child: Text('Out of Stock'),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            _availabilityFilter = value;
-                          });
-                        },
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Expanded(

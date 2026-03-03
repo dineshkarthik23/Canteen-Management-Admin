@@ -112,93 +112,124 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
             key: _formKey,
             child: Column(
               children: [
-                TextFormField(
-                  controller: _nameController,
-                  textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                    labelText: 'Item Name',
-                    prefixIcon: Icon(Icons.fastfood_outlined),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.15),
+                    ),
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Item name is required';
-                    }
-                    if (value.trim().length < 2) {
-                      return 'Item name should be at least 2 characters';
-                    }
-                    return null;
-                  },
+                  child: Text(
+                    _isEditMode
+                        ? 'Update item details'
+                        : 'Create a new canteen item',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 12),
-                DropdownButtonFormField<int>(
-                  key: ValueKey<int?>(_categoryId),
-                  initialValue: _categoryId,
-                  decoration: const InputDecoration(
-                    labelText: 'Category',
-                    prefixIcon: Icon(Icons.category_outlined),
-                  ),
-                  items: categories
-                      .map(
-                        (category) => DropdownMenuItem<int>(
-                          value: category.id,
-                          child: Text(category.name),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _nameController,
+                          textInputAction: TextInputAction.next,
+                          decoration: const InputDecoration(
+                            labelText: 'Item Name',
+                            prefixIcon: Icon(Icons.fastfood_outlined),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Item name is required';
+                            }
+                            if (value.trim().length < 2) {
+                              return 'Item name should be at least 2 characters';
+                            }
+                            return null;
+                          },
                         ),
-                      )
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _categoryId = value;
-                    });
-                  },
-                  validator: (value) =>
-                      value == null ? 'Please select a category' : null,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _priceController,
-                  textInputAction: TextInputAction.next,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  decoration: const InputDecoration(
-                    labelText: 'Price',
-                    prefixIcon: Icon(Icons.currency_rupee),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Price is required';
-                    }
-                    final parsed = double.tryParse(value.trim());
-                    if (parsed == null || parsed <= 0) {
-                      return 'Enter a valid price above 0';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _descriptionController,
-                  textInputAction: TextInputAction.next,
-                  maxLines: 3,
-                  decoration: const InputDecoration(
-                    labelText: 'Description',
-                    alignLabelWithHint: true,
-                    prefixIcon: Icon(Icons.description_outlined),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Description is required';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _imageController,
-                  onChanged: (_) => setState(() {}),
-                  decoration: const InputDecoration(
-                    labelText: 'Image URL (optional)',
-                    prefixIcon: Icon(Icons.image_outlined),
+                        const SizedBox(height: 12),
+                        DropdownButtonFormField<int>(
+                          key: ValueKey<int?>(_categoryId),
+                          initialValue: _categoryId,
+                          decoration: const InputDecoration(
+                            labelText: 'Category',
+                            prefixIcon: Icon(Icons.category_outlined),
+                          ),
+                          items: categories
+                              .map(
+                                (category) => DropdownMenuItem<int>(
+                                  value: category.id,
+                                  child: Text(category.name),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              _categoryId = value;
+                            });
+                          },
+                          validator: (value) =>
+                              value == null ? 'Please select a category' : null,
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _priceController,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          decoration: const InputDecoration(
+                            labelText: 'Price (Rs.)',
+                            prefixIcon: Icon(Icons.currency_rupee),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Price is required';
+                            }
+                            final parsed = double.tryParse(value.trim());
+                            if (parsed == null || parsed <= 0) {
+                              return 'Enter a valid price above 0';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _descriptionController,
+                          textInputAction: TextInputAction.next,
+                          maxLines: 3,
+                          decoration: const InputDecoration(
+                            labelText: 'Description',
+                            alignLabelWithHint: true,
+                            prefixIcon: Icon(Icons.description_outlined),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Description is required';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _imageController,
+                          onChanged: (_) => setState(() {}),
+                          decoration: const InputDecoration(
+                            labelText: 'Image URL (optional)',
+                            prefixIcon: Icon(Icons.image_outlined),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 if (_imageController.text.trim().isNotEmpty) ...[
@@ -226,16 +257,18 @@ class _ItemFormScreenState extends State<ItemFormScreen> {
                   ),
                 ],
                 const SizedBox(height: 12),
-                SwitchListTile.adaptive(
-                  contentPadding: EdgeInsets.zero,
-                  value: _isAvailable,
-                  onChanged: (value) {
-                    setState(() {
-                      _isAvailable = value;
-                    });
-                  },
-                  title: const Text('Availability Status'),
-                  subtitle: Text(_isAvailable ? 'Available' : 'Out of Stock'),
+                Card(
+                  child: SwitchListTile.adaptive(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 14),
+                    value: _isAvailable,
+                    onChanged: (value) {
+                      setState(() {
+                        _isAvailable = value;
+                      });
+                    },
+                    title: const Text('Availability Status'),
+                    subtitle: Text(_isAvailable ? 'Available' : 'Out of Stock'),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 SizedBox(

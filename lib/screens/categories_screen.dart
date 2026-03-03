@@ -39,15 +39,14 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       ),
     );
 
-    if (categoryName == null) {
-      return;
-    }
-    if (!mounted) {
+    if (categoryName == null || !mounted) {
       return;
     }
 
-    // Let dialog route teardown complete before mutating app state.
     await Future<void>.delayed(kThemeAnimationDuration);
+    if (!mounted) {
+      return;
+    }
 
     final success = isEdit
         ? widget.appState.updateCategory(category.id, categoryName)
@@ -91,25 +90,24 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       ),
     );
 
-    if (shouldDelete == true) {
-      // Let dialog route teardown complete before mutating app state.
-      await Future<void>.delayed(kThemeAnimationDuration);
-      if (!mounted) {
-        return;
-      }
-      widget.appState.deleteCategory(category.id);
-      if (_filteredCategoryId == category.id) {
-        setState(() {
-          _filteredCategoryId = null;
-        });
-      }
-      if (!mounted) {
-        return;
-      }
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('"${category.name}" deleted.')));
+    if (shouldDelete != true) {
+      return;
     }
+    await Future<void>.delayed(kThemeAnimationDuration);
+    if (!mounted) {
+      return;
+    }
+
+    widget.appState.deleteCategory(category.id);
+    if (_filteredCategoryId == category.id) {
+      setState(() {
+        _filteredCategoryId = null;
+      });
+    }
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('"${category.name}" deleted.')));
   }
 
   @override
@@ -130,11 +128,47 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           body: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Text(
-                'Manage Categories',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.15),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.12),
+                      child: Icon(
+                        Icons.category,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Manage Categories',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                          Text(
+                            '${categories.length} category${categories.length == 1 ? '' : 'ies'}',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 10),
               if (categories.isEmpty)
@@ -153,8 +187,15 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     margin: const EdgeInsets.only(bottom: 10),
                     child: ListTile(
                       leading: CircleAvatar(
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.12),
                         child: Text(
                           category.name.substring(0, 1).toUpperCase(),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                       title: Text(category.name),
@@ -239,7 +280,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Text('₹${item.price.toStringAsFixed(2)}'),
+                                  Text(
+                                    'Rs. ${item.price.toStringAsFixed(2)}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
                                   Text(
                                     item.isAvailable
                                         ? 'Available'
