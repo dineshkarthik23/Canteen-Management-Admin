@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:clg_admin/screens/admin_shell.dart';
 import 'package:clg_admin/screens/login_screen.dart';
 import 'package:clg_admin/screens/splash_screen.dart';
@@ -85,95 +86,215 @@ class _CanteenAdminAppState extends State<CanteenAdminApp> {
   }
 
   void _safeSetState(VoidCallback fn) {
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
       setState(fn);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    const bluePrimary = Color(0xFF0D47A1);
-    const blueSecondary = Color(0xFF1976D2);
+    // Rich indigo-to-violet palette with warm amber accent
+    const primaryIndigo = Color(0xFF3730A3);
+    const primaryDeep = Color(0xFF4F46E5);
+    const accentAmber = Color(0xFFF59E0B);
+    const surfaceLight = Color(0xFFF8F7FF);
+
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+      ),
+    );
 
     final lightTheme = ThemeData(
       useMaterial3: true,
+      fontFamily: 'Nunito',
       colorScheme: ColorScheme.fromSeed(
-        seedColor: bluePrimary,
-        primary: bluePrimary,
-        secondary: blueSecondary,
+        seedColor: primaryDeep,
+        primary: primaryDeep,
+        secondary: accentAmber,
+        tertiary: const Color(0xFF06B6D4),
+        surface: surfaceLight,
+        onPrimary: Colors.white,
       ),
-      scaffoldBackgroundColor: const Color(0xFFF4F8FF),
-      appBarTheme: const AppBarTheme(
-        centerTitle: true,
-        backgroundColor: bluePrimary,
+      scaffoldBackgroundColor: surfaceLight,
+      appBarTheme: AppBarTheme(
+        centerTitle: false,
+        backgroundColor: primaryDeep,
         foregroundColor: Colors.white,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.3,
+          fontFamily: 'Nunito',
+        ),
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
       ),
       cardTheme: CardThemeData(
-        elevation: 2,
+        elevation: 0,
         color: Colors.white,
-        shadowColor: Colors.black.withValues(alpha: 0.08),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shadowColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(
+            color: primaryDeep.withValues(alpha: 0.08),
+            width: 1.5,
+          ),
+        ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 14,
+        fillColor: const Color(0xFFF3F2FF),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide.none,
         ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: bluePrimary.withValues(alpha: 0.22)),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: primaryDeep.withValues(alpha: 0.15), width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: bluePrimary, width: 1.4),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: primaryDeep, width: 2),
         ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFFEF4444), width: 1.5),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFFEF4444), width: 2),
+        ),
+        labelStyle: TextStyle(color: primaryDeep.withValues(alpha: 0.7), fontWeight: FontWeight.w600),
+        prefixIconColor: primaryDeep,
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: Colors.white,
-        indicatorColor: bluePrimary.withValues(alpha: 0.14),
+        elevation: 0,
+        height: 72,
+        indicatorColor: primaryDeep.withValues(alpha: 0.12),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return TextStyle(
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            color: selected ? bluePrimary : const Color(0xFF546E7A),
+            fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
+            fontSize: 11,
+            color: selected ? primaryDeep : const Color(0xFF94A3B8),
+            fontFamily: 'Nunito',
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return IconThemeData(
+            color: selected ? primaryDeep : const Color(0xFF94A3B8),
+            size: 24,
           );
         }),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: bluePrimary,
+          backgroundColor: primaryDeep,
           foregroundColor: Colors.white,
-          minimumSize: const Size.fromHeight(48),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+          minimumSize: const Size.fromHeight(52),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          textStyle: const TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 15,
+            fontFamily: 'Nunito',
           ),
+          elevation: 0,
         ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: primaryDeep,
+          textStyle: const TextStyle(fontWeight: FontWeight.w700, fontFamily: 'Nunito'),
+        ),
+      ),
+      chipTheme: ChipThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+      dividerTheme: const DividerThemeData(space: 0, thickness: 1, color: Color(0xFFF1F0FF)),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: primaryIndigo,
+        contentTextStyle: const TextStyle(color: Colors.white, fontFamily: 'Nunito', fontWeight: FontWeight.w600),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        behavior: SnackBarBehavior.floating,
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: primaryDeep,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 4,
       ),
     );
 
     final darkTheme = ThemeData(
       useMaterial3: true,
+      fontFamily: 'Nunito',
       colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color.fromARGB(255, 20, 94, 212),
+        seedColor: primaryDeep,
         brightness: Brightness.dark,
+        primary: const Color(0xFF818CF8),
+        secondary: accentAmber,
+        surface: const Color(0xFF0F0E1A),
       ),
-      appBarTheme: const AppBarTheme(centerTitle: true),
+      scaffoldBackgroundColor: const Color(0xFF0F0E1A),
+      appBarTheme: const AppBarTheme(
+        centerTitle: false,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        titleTextStyle: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.3,
+          fontFamily: 'Nunito',
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
+      ),
       cardTheme: CardThemeData(
-        elevation: 1,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 0,
+        color: const Color(0xFF1A1830),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: Color(0xFF2D2B4E), width: 1.5),
+        ),
       ),
       inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        filled: true,
+        fillColor: const Color(0xFF1A1830),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFF2D2B4E), width: 1.5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFF2D2B4E), width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFF818CF8), width: 2),
+        ),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        behavior: SnackBarBehavior.floating,
       ),
     );
 
@@ -187,16 +308,16 @@ class _CanteenAdminAppState extends State<CanteenAdminApp> {
       home: _showSplash
           ? const SplashScreen()
           : _isLoggedIn
-          ? AdminShell(
-              appState: _appState,
-              themeMode: _themeMode,
-              onThemeToggle: _onThemeToggle,
-              onLogout: _onLogout,
-            )
-          : LoginScreen(
-              authService: _authService,
-              onLoginSuccess: _onLoginSuccess,
-            ),
+              ? AdminShell(
+                  appState: _appState,
+                  themeMode: _themeMode,
+                  onThemeToggle: _onThemeToggle,
+                  onLogout: _onLogout,
+                )
+              : LoginScreen(
+                  authService: _authService,
+                  onLoginSuccess: _onLoginSuccess,
+                ),
     );
   }
 }
