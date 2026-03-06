@@ -6,11 +6,15 @@ class SummaryCard extends StatelessWidget {
     required this.title,
     required this.value,
     required this.icon,
+    this.gradientColors = const [Color(0xFF2563EB), Color(0xFF1D4ED8)],
+    this.accentColor = const Color(0xFF1D4ED8),
   });
 
   final String title;
   final String value;
   final IconData icon;
+  final List<Color> gradientColors;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +23,7 @@ class SummaryCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Theme.of(context).colorScheme.primary,
-              const Color(0xFF1976D2),
-            ],
+            colors: gradientColors,
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -44,7 +45,7 @@ class SummaryCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 18,
-                    backgroundColor: Colors.white.withValues(alpha: 0.2),
+                    backgroundColor: accentColor.withValues(alpha: 0.3),
                     child: Icon(icon, color: Colors.white),
                   ),
                   const SizedBox(height: 14),
