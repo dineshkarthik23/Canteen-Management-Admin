@@ -253,9 +253,12 @@ class _CanteenAdminAppState extends State<CanteenAdminApp> {
       scaffoldBackgroundColor: const Color(0xFF0F0E1A),
       appBarTheme: const AppBarTheme(
         centerTitle: false,
+        backgroundColor: Color(0xFF0F0E1A),
+        foregroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
         titleTextStyle: TextStyle(
+          color: Colors.white,
           fontSize: 20,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.3,
