@@ -375,26 +375,40 @@ class _LoginScreenState extends State<LoginScreen>
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        Icon(
-                                          Icons.info_outline_rounded,
-                                          size: 15,
-                                          color: cs.primary.withValues(alpha: 0.7),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Text(
-                                          'Demo credentials: ',
-                                          style: TextStyle(
-                                            color: cs.primary.withValues(alpha: 0.7),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        Text(
-                                          'admin / admin@123',
-                                          style: TextStyle(
-                                            color: cs.primary,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w800,
+                                        Flexible(
+                                          child: Wrap(
+                                            alignment: WrapAlignment.center,
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.center,
+                                            spacing: 6,
+                                            runSpacing: 4,
+                                            children: [
+                                              Icon(
+                                                Icons.info_outline_rounded,
+                                                size: 15,
+                                                color: cs.primary.withValues(
+                                                  alpha: 0.7,
+                                                ),
+                                              ),
+                                              Text(
+                                                'Demo credentials:',
+                                                style: TextStyle(
+                                                  color: cs.primary.withValues(
+                                                    alpha: 0.7,
+                                                  ),
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              Text(
+                                                'admin / admin@123',
+                                                style: TextStyle(
+                                                  color: cs.primary,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w800,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],
